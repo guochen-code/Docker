@@ -1,0 +1,44 @@
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def add():
+    a=requests.args.get("a")
+    b=requests.args.get("b")
+    return str(int(a) + int(b))
+    
+if __name__=='__main__':
+    app.run()
+    
+# open a web browser and type in:
+http://127.0.0.1:5000/?a=10&b=20    ######################### put input from the user
+
+-> 30
+
+******************************** security concern because every can see the url and know what the values are for a and b - use POST
+if use post, the web browser is no longer capable, use postman
+
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/', methods=['POST'])
+def add():
+    a=requests.form["a"]
+    b=requests.form["b"]
+    return str(int(a) + int(b))
+    
+if __name__=='__main__':
+    app.run()
+    
+# in postman, you cannot insert values in your url, put them in the Params tab for post request.
+
+******************************** ML predict
+# framework
+def predict(house_size,house_beds):
+  prediction = ml_model.predict(house_size,house_beds)
+  return prediction
+  
+  
+
