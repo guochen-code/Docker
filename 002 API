@@ -1,1 +1,37 @@
+import pickle
+from flask import Flask, request
+import numpy as np
+
+with open('./model/pkl', 'rb') as model_file: # best practice to use relative path, easy to reproducible in another environment # 'rb' makes sure binary not usual text file
+  model = pickle.load(model_file)
+  
+app = Flask(__name__)
+
+@app.route('/predict'):
+def predict_iris():
+  x1=request.args.get("x1")
+  x2=request.args.get("x2")
+  x3=request.args.get("x3")
+  x4=request.args.get("x4")
+  
+  prediction = model.predict(np.array([[x1,x2,x3,x4]])) # parse our data into a list of lists, as a numpy array
+  
+  return str(prediction)
+  
+if __name__='__main__':
+  app.run()
+
+# open a web browser and type in:
+localhost:5000/predict?x1=1&x2=2&x3=3&x4=4
+
+********************************************************************************* provide file input to Flask API
+import pandas as pd
+
+@app.route('/predict_file',methods=['POST']):
+def predict_iris_file():
+  input_data = pd.read_csv(request.files.get('input_file'),header=None) # request.files['input_file'] is accessing it as a directory, use get method for better troubleshooting # not treate 1st row as header
+  prediction = model.predict(input_data)
+  return str(list(prediction)) # return as a list, since have multiple data points here
+  
+# web browser cannot handle it. use postman!!!
 
