@@ -9,5 +9,48 @@ docker build -t rf-api . # . means just look into this directory, no anywhere fu
 
 -> no such file or directory # just as suspected, the .txt is messing up
 
+after fix, rerun -> fail again -> no requirements.tx -> add this file
 
+**************************************************************************************
+# look at my running images:
+docker ps
+-> no container running, because we just built our image
+# you can use image to start multiple containers
+
+dokcer images
+-> show a list of docker images
+
+# containerize/run the image
+docker run -p 5000:5000 rf-api # port of the host machine binds with the port of my docker machine
+-> error: unsupported pickle protocal tree here
+
+reasnon: 
+local machine python 3, but
+docker has python 2 version, not support
+change base image:
+
+FROM continuumio/anaconda3:4.4.0 # 3 is for python3
+
+rebuild image:
+docker build -t rf-api
+docker run -p 5000:5000 rf-api
+
+---> sitll not working
+# specify the host in the code
+
+app.run(host='0.0.0.0', port=5000)
+# rebuild the image and run
+
+# so when we see app.run() with default setting, it actually comes to be localhost and localhost and ip address inside a docker networking environment is 
+not recoganizable to our host environment,  which is our local machine
+# because we use local machine'web browser to open the url
+
+summary:
+if 0.0.0.0 not working
+try 192.168.99.100
+windows is always a bit of a problem in the sense it depends on what ip the docker vm is getting assinged.
+either it will be localhost, or 192.168.99.100. in case you can't access, using both.
+get to know the ip address assinged to the docker vm from your docker installation setting.
+
+"docker-machine ip" -> get the appropriate IP
 
