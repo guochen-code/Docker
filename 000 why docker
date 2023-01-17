@@ -1,0 +1,42 @@
+why
+build once, deploy everywhere
+resources are isolated
+environment standardization
+
+******************************* docker vs VMs
+what
+host server
+- cpu
+- RAM
+- storage
+- network
+
+VMs: 
+on top of host server
+grap own cpu, RAM, sotrage and network
+
+resources of the host server is shared by multiple VMs
+
+underutilizatin of resources: 1st VM is totally unutilized, but resource is blocked and other VMs cannot use
+docker is a virtualization on top of the operating system, not the physical resources!!!!!! **** IMPORTANT ****
+docker will have its own PID one process, own network stack, own file system
+if we have 4 docker containers in a single server, and if there of the containers are underutilized and one of them requires more physical resources to run,
+it is possible to allocate more resources to the 4th container. This dynamic behavior cannot be achieved in virtual machines.
+
+this OS virtualization helps us achieve the efficient utilization of the physical resources of a server.
+
+******************************* docker vs virtual Environment
+VE is able to achieve isolation but not portability, VE provides isolation in a single environment
+whatever you do in that environment is not very repicable to another environment, at least not that easily.
+
+example: if i have set up a conda or virtual environment in my machine, I would find it hard to replicate the same thing on another machine, especially
+if there are operating system or hardware differences.
+
+docker on the otherhand is built for isolation and reproducibility.
+reproducibility of environments lead to reproducibility of output **** IMPORTANT **** in ML
+
+
+
+
+
+
