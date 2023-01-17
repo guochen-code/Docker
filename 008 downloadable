@@ -70,8 +70,11 @@ def cluster():
       data.compress_type=zipfile.ZIP_DEFLATED
       zf.writestr(data,files[i],getvalue())
   memory_file.seek(0)
+  response=make_response(send_file(memory_file, attachment_filename='cluster_output.zip', as_attachement=True), attachment_file='cluster_output.zip')
+  response.headers['Content-Disposition']='attachment;filename=cluster_output.zip')
+  response.headers['Access-Control-Allow-Origin'] = '*' # cross origin request
   
-  return 'this works'
+  return response
   
 if __name__ =='__main__':
   app.run(host='0.0.0.0')
