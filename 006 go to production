@@ -1,0 +1,45 @@
+all previous is development server
+
+we use apache/ nginx to host in production environment
+
+containerize flask and apache together using docker
+
+build a bridge between flask and apache is something called WSGI, web server gateway interface
+connect python application to mature server app like apache/nginx
+so they can handle all the requests come in
+
+client fire request -> land on apache/nginx server/
+how many concurrent users will have for this webserver?
+once apache/nginx gets these requests from users, it will consume them, coordinate them and route them through WSGI to our application
+corresponding functions will be invoked in python app and sends back reponse to apache/nginx server, push back to the users
+
+******************************************************************************************************************************************
+review what we have so far
+a single file (Dockerfile) along with a single folder that contains scripts (flask_predict_api.py, rf.pkl, and requirements.txt)
+
+changes need to be made:
+
+in reuqrements.txt:
+flask
+flasgger
+mod_wsgi # python mod of wsgi
+
+added flask_predict_api.wsgi:
+
+#! /usr/bin/python # specify the python shell to use in order to execute this wsgi file
+
+import sys
+sys.path.insert(0, "/var/www/flask_predict_api") # the folder where we are going to place the scripts, keep our app in right place for apache to pick up 
+sys.path.insert(0, "/opt/conda/lib/python3.6.site-packages") # our used base image's default installation path # include all the libraries come along with it and the python environment itself
+sys.path.insert(0, "/opt/conda/bin") # so the wsgi file has this accessible when it's trying to build the bridge
+
+import os
+os.environ['PYTHONPATH']='/opt/conda/bin/python' # make sure pythonpath environment variable is available so that apache can know which version of python to use. best practice because multiple versions can be installed.
+
+from flask_predict_api import app as application # we have flask_predict_api.py which is python script, which is python module, this asks wsgi to look inside this script to search this file and import app as application. there has to be some object called app resides inside the script.
+
+# apache/nginx has to call the functions in flask app in a right way
+# it needs the right components, it needs the right environment
+# all this wgis doing is coming up with that environment that this system needs to reside on so that all our python packages that we install through the requirements
+inside the container is intact
+# 
