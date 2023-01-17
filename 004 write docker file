@@ -1,0 +1,28 @@
+FROM continuum/anaconda:4.4.0
+MAINTAINER UNP, https://unp.education # optional, signature
+COPY ./flask_demo /usr/local/python/
+EXPOSE /usr/local/python/
+RUN pip install -r requirements.txt 
+RUN python -m nltk.downloader average_tagger_perceptron # just for illustrative purpose, can be any command
+
+# problem above: one run is one image, you keep running run, you keep building up images, need a lot of resources
+# fix:
+
+FROM continuum/anaconda:4.4.0
+MAINTAINER UNP, https://unp.education
+COPY ./flask_demo /usr/local/python/
+EXPOSE /usr/local/python/
+RUN pip install -r requirements.txt \
+&& python -m nltk.downloader average_tagger_perceptron
+
+in our case:
+FROM continuum/anaconda:4.4.0
+MAINTAINER UNP, https://unp.education
+COPY ./flask_demo /usr/local/python/
+EXPOSE /usr/local/python/
+RUN pip install -r requirements.txt 
+CMD python flask_predict_api.py
+
+save as: Dockerfile # extensionless file, it's mandate
+
+
