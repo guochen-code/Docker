@@ -51,3 +51,24 @@ so that will be able to make some requests out of docker container instead of us
 
 with open('./rf.pkl,'rb') as model_file: #### we know the file is here in this directory
   model=pickle.load(model_file)
+
+
+******************************************************************************************************************
+To create a image from container execute the command below:
+docker commit container_id imagename
+
+the default registry is accessible using the command:
+sudo docker search
+
+which command is used to associate an image with a repository (or multiple repositories) at build time?
+sudo docker build -t IMAGENAME
+
+show all running containers:
+docker ps
+
+by default, in what mode do docker containers run in? and what is the value of the -d option that specifies the mode in which docker container runs?
+foreground mode; -d=True
+
+docker diff command has 3 events listed in:
+A-Add; D-Delete; C-Change;
+
