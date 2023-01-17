@@ -1,0 +1,38 @@
+# -d: deamon
+docker run -d -p 8000:8000 apache-flask
+-> error: bind for 0.0.0.0:8000 failed: port is already allocated.
+
+# probably one container is running using this, check any container is running:
+docker ps-> 7526a03aa78b # container id
+docker stop 7526a03aa78b
+
+# open web browser, 
+localhost:8000/apidocs/ 
+->
+internal server error - how to troubleshoot???
+
+# attach my local machine terminal to the docker terminal by coping the container id
+docker exec -it beb53105fd6e bash # container id
+-> # you will enter into your docker container's terminal
+
+(1) check the logs of apache:
+vim /var/log/apache2/error.log
+-> empty
+
+# reason: i'm not supposed to find anything in default log because in docker file, we have
+--server-root=/etc/mod_wsgi_express-80 # need check in this location
+
+cd /etc/mod_wsgi_express-80
+ls
+->error.log
+vim error.log
+-> name error: app2 is not defined. # app vs app2
+
+# to fix
+(1) exit docker container
+exit
+
+docker ps -> get container id
+docker stop beb53105fd6e
+
+# build the image again, small mistake ----> restart over !!!!!!
