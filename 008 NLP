@@ -1,0 +1,81 @@
+-- unstructured text
+-- clean up - NL techiniques
+-- unsupervised approach -clustering
+
+previous app is very targeted and domain oriented. How to build up a generic app that can take in any kind of data set as long as you get certain parameters right
+you can give an output that can mak sense on any domain or on any kind of data
+
+***************************************************************************************************************************************************************
+from flask import Flask, request, make_response, send_file
+from stemming.porter2 import stem # stem('affected') -> 'affect'
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.cluster import KMeans
+from io import BytesIO
+import time
+import zipfile
+
+
+app = Flask(__name__)
+
+def cleanse_text(text):
+  if text:
+    # remove whitespaces
+    clean = ' '.join(i for i in text.split())
+    # stemming a word (same as lemmonization) # care, caring, coming down to same word, cat, cats -> cat
+    red_text = [stem(word) for word in clean.split()]
+    return ' '.join(red_text)
+  else:
+    return text
+
+@app.route('/cluster',methods=['POST'])
+def cluster():
+  data = pd.read_csv(request.files['dataset'])
+  unstructure = 'text'
+  if 'col' in request.args:
+    unstructure = request.args.get('col')
+  no_of_clusters=2
+  if 'no_of_clusters' in request.args:
+    no_of_clusters=request.args.get('no_of_clusters')
+  
+  data = data.fillna('NULL')
+  
+  data['clean_sum'] = data[unstructure].apply(cleanse_text)
+  
+  vectorizer = CountVectorizer(analyzer='word', stop_words='english') # intelligent to split by word # the, an, a.....
+  # doc1 a b c
+  # doc2 b c d
+  #
+  #         a b c d
+  # doc1    1 1 1 0
+  # doc2    0 1 1 1
+  counts=vectorizer.fit_transform(data['clean_sum'])
+  
+  kmeans = Kmeans(n_clusters=no_of_clusters)
+  
+  data['cluster_num'] = kmeans.fit_predict(counts)
+  data = data.drop)['clean_sum'],axis=1)
+  
+  output = BytesIO()
+  writer=pd.ExcelWrite(output,engine='xlsxwriter')
+  data.to_excel(writer,sheet_name='Clusters',encoding='utf-8',index=False)
+  
+  memory_file=BytesIO()
+  with zipfile.ZipFile(memory_file,'w') as zf:
+    names = ['cluster_output.xlsx']
+    files=[output] # [output,output2,ouput3]
+    for i in range(len(files)):
+      data = zipfile.ZipInfo(names[i])
+      data.date_time=time.localtime(time.time())
+      data.compress_type=zipfile.ZIP_DEFLATED
+      zf.writestr(data,files[i],getvalue())
+  memory_file.seek(0)
+  
+  return 'this works'
+  
+if __name__ =='__main__':
+  app.run(host='0.0.0.0')
+  
+  
+  
+  
