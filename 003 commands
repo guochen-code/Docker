@@ -1,0 +1,53 @@
+***************************************************************************************************************** key commands
+-- FROM
+
+layer on top of layer
+
+linux -> anaconda python -> flask, flasgger -> docker
+linux: base image is the foundation
+the way to specify what your base image is going to be is using a FROM command in a docker file
+
+in our case, use continuumIO/anaconda, comes with pre-installed scikit-learn, numpy.....
+
+FROM continuumio/anaconda
+
+-- COPY
+outside this is our host environment, which can be a local machine or server, no clue what the hardware is
+we want to build a file interface where we will be able to transfer the files that we want from our host to our docker image
+using the COPY command,
+specify a list of files or a folder essentially will be sticking to our root folder where will neatly stack up all the files we want to transfer
+and then will copy this folder onto the docker container 
+
+COPY hfs/python /usr/local/python
+
+-- EXPOSE
+docker has its own root file system, own networking stack which means they will have their own set of ports that will need to be opened !!!!!!!
+what we want to do: whenever docker start, make sure that your port 5000 is exposed to the world so that when an external entity is trying to access
+some urls which is based on that port 5000, they are able to find it
+
+this is a nice security featuer where you can expose minimal number of ports when you need them (same idea for any custom port as well)
+
+EXPOSE 5000
+
+-- WORKDIR # specify the working directory of the container when it starts
+issue to solve:
+run commands, you need to first cd to the folder where the scripts are stored and run the commands
+too much work and a manual intervention, a hurdle for achieveing end-to-end automation
+
+WORKDIR /usr/local/python
+
+
+-- RUN # any command you give to RUN will run in your docker container
+RUN pip intall xxx
+
+
+-- CMD # similar to RUN, the last piece of command that you want to run in your docker image and you want to make sure the command does not terminate and run forever
+
+CMD python flask-app
+
+***************************************************************************************************************** 
+next thing: build a docker file that will containerize our app and run this docker app with our flask app running at the back
+so that will be able to make some requests out of docker container instead of using our machines
+
+with open('./rf.pkl,'rb') as model_file: #### we know the file is here in this directory
+  model=pickle.load(model_file)
