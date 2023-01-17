@@ -1,0 +1,13 @@
+cd "Docker sample"/
+ls
+-> Dockerfile.txt flask_demo (folder) # not like to see this .txt
+
+# start your docker app
+
+#
+docker build -t rf-api . # . means just look into this directory, no anywhere further
+
+-> no such file or directory # just as suspected, the .txt is messing up
+
+
+
