@@ -16,7 +16,7 @@ RUN pip install -r requirements.txt \
 && python -m nltk.downloader average_tagger_perceptron
 
 in our case:
-FROM continuum/anaconda:4.4.0
+FROM continuumio/anaconda:4.4.0
 MAINTAINER UNP, https://unp.education
 COPY ./flask_demo /usr/local/python/
 EXPOSE /usr/local/python/
