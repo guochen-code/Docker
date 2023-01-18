@@ -8,6 +8,7 @@ you can give an output that can mak sense on any domain or on any kind of data
 ***************************************************************************************************************************************************************
 from flask import Flask, request, make_response, send_file
 from stemming.porter2 import stem # stem('affected') -> 'affect'
+import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.cluster import KMeans
@@ -60,6 +61,18 @@ def cluster():
   writer=pd.ExcelWrite(output,engine='xlsxwriter')
   data.to_excel(writer,sheet_name='Clusters',encoding='utf-8',index=False)
   
+  # add statistics
+  clusters=[]
+  for i in range(np.shape(kmeans.cluster_centers_)[0]):
+    data_cluster=pd.concat([pd.Series(vectorizer.get_feature_names(),pd.DataFrame(kmeans.cluster_centers_[i],axis=1)
+    data_cluster.columns=['keywords','weights']
+    data_cluster=data_cluster.sort_values(by=['weights'],ascending=False)
+    data_clust=data_cluster.head(n=10)['keywords'].tolist()
+    cluster.append(data_clust)
+  pd.DataFrame(clusters).to_excel(writer,sheet_name='Top_Keywords',encoding='utf-8')
+  
+  writer.save()
+  
   memory_file=BytesIO()
   with zipfile.ZipFile(memory_file,'w') as zf:
     names = ['cluster_output.xlsx']
@@ -70,7 +83,7 @@ def cluster():
       data.compress_type=zipfile.ZIP_DEFLATED
       zf.writestr(data,files[i],getvalue())
   memory_file.seek(0)
-  response=make_response(send_file(memory_file, attachment_filename='cluster_output.zip', as_attachement=True), attachment_file='cluster_output.zip')
+  response=make_response(send_file(memory_file, attachment_filename='cluster_output.zip', as_attachement=True))
   response.headers['Content-Disposition']='attachment;filename=cluster_output.zip')
   response.headers['Access-Control-Allow-Origin'] = '*' # cross origin request
   
