@@ -33,6 +33,7 @@ free -h
 # close instance and restart, this will be lost
 # if want to make it permanent:
 # add this into system file, so it can load when the sytem reboot or restart
+
 sudo nano /etc/fstab
 
 # in this opened file, type in:
@@ -62,5 +63,139 @@ need larger scalability and higher security server !!!!!!!
 
 flask will run at the backend while at frontend we will use nginx and wsgi
 
+****** set up virtual environment
+sudo apt update # always keep your system updated
+sudo apt upgrade
+
+# install nginx and wsgi
+sudo apt install python3-pip python-dev build-essential libssl-dev python3-setuptools
+
+# make sure in root directory
+sudo apt install python3-venv
+
+mkdir bertmodel # make a new directory
+python -m venv bertenv # create a VE
+source bertenv/bin/activate # activate VE
+# now you in the VE
+
+*** set up flask
+# still in VE
+pip install wheel
+pip install uwsgi flask
+sudo ufw allow 5000 # access VE port 5000 from local machine
+pip install ktrain
+-> failed, the same reason, not right pip version in this VE as well
+# check
+pip --version
+
+sudo apt update # update system in the VE
+sudo apt upgrade
+
+pip install -U pip # upgrade pip
+
+pip install ktrain
 
 
+*** set up uWSGI
+nano ~/bertmodel/wsgi.py
+
+inside wsgi.py add below code
+from app import app
+if __name__=='__main__':
+   app.run()
+   
+# testing uWSGI
+uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
+# after testing
+deactivate # deactivate our VE
+
+*** configure uWSGI server
+why?
+port 5000 not much secure
+need secure and robust system
+re-configure uWSGI
+
+# get back into the VE
+nano ~/bertmodel/bertmodel.ini
+
+[uwsgi]
+module = wsgi:app
+master = true                  # stop multithread: master=false, processes=1, add one line below: cheaper=0
+processes = 5
+socket = bertmodel.sock
+chmod-socket = 600
+vacuum = true
+die-on-term = true
+
+*** create system unit file
+# this make sure when restart, all the settings reload automatically
+# still in VE
+sudo nano /etc/systemd/system/bertmodel.service
+
+[Unit]
+Description=uWSGI instance to serve bertmodel
+After=network.target
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/bertmodel
+Environment="PATH=/home/ubuntu/bertmodel/bertenv/bin"
+ExecStart=/home/ubuntu/bertmodel/bertenv/bin/uwsgi --ini bertmodel.ini
+[Install]
+WantedBy=multi-user.target
+
+*** start uWSGI services
+sudo systemctl start bertmodel
+sudo systemctl enable bertmodel
+sudo systemctl status bertmodel
+
+*** install Nginx
+sudo apt install nginx
+sudo ufw app list # connection to outside world
+# only allow HTTPS
+sudo ufw allow 'Nignx HTTP'
+sudo ufw status
+systemctl status nginx
+
+# set up a link between nginx and wsgi server to access our api
+*** configure nginx
+sudo nano /etc/nginx/sites-available/bertmodel
+
+server {
+      listen 80;
+      server_name bertmodel <public_ip>;    ##### public_ip will change once restart instance, need change here as well !!!!!!!!!!!!! only place for change!!!!!!
+      
+      location / {
+            inlcude uwsgi_params;
+            uwsgi_pass unix:/home/ubuntu/bertmodel/bertmodel.sock;
+            }
+       }
+# enable nginx server block configuration
+sudo ln -s /etc/nginx/sites-available/bertmodel /etc/nginx/sites-enabled
+sudo nginx -t
+sudo systemctl restart nginx
+sudo ufw delete allow 5000
+sudo ufw allow 'Nignx Full'
+
+# now use web browser from local machine we can see our api
+# we are accessing our server on ubuntu through nginx - wsgi - flask
+# now you have blocked every port to the server, only http port is accessible to the server
+# you can also install SSL certificate if you have, you can only allow through HTTPS, through secured link
+
+************************* we are done !!!! wow !!!
+testing the whole thing and how to use log for troubleshooting if errors occur
+
+# restart instance - ip changed
+sudo systemctl restart bertmodel # what is this???
+sudo systemctl restart nginx
+
+# error checking command
+sudo less /var/log/nginx/error.log
+sudo less /var/log/nginx/access.log
+sudo journalctl -u nginx
+sudo journalctl -u bertmodel
+
+-----------
+tensorflow multithread error: tensorflow run in multithread, always problem
+need to stop multithread
+we did multithread configuration in wsgi, need to reconfigure
