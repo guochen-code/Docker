@@ -3,7 +3,7 @@ use WinSCP to transfer files to EC2 from local machine
 (will need pem file)
 
 ********** install packages on EC2 - restrictions
-install ktrain(including tensorflow) -> killed # not enough memory? -> pip install ktrain --nocache-directory # this will work
+install ktrain(including tensorflow) -> killed # not enough memory? -> pip install ktrain -no-cache-dir # this will work
 
 
 *********** memory swap
