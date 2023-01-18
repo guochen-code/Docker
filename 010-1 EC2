@@ -1,0 +1,66 @@
+********** file transfer # from local machine to EC2
+use WinSCP to transfer files to EC2 from local machine
+(will need pem file)
+
+********** install packages on EC2 - restrictions
+install ktrain(including tensorflow) -> killed # not enough memory? -> pip install ktrain --nocache-directory # this will work
+
+
+*********** memory swap
+run flask: python app.py -> error: out of memory # not enough memory to run tensorflow and flask
+--- memory swap
+# go to root directory (but you can perform this operation anywhere)
+cd ~
+# to see how much memory hard disk we have
+df -h
+-> how much ssd size and used
+# to see how much memory we have
+free -h
+# swap memory
+sudo swapon --show # will return empty if no swap exists
+sudo fallocate -l 2G /swapfile # create a swapfile
+ls -lh /swapfile # check if the file created or not
+sudo chmod 600 /swapfile # enable the swapfile
+ls -lh /swapfile # check permission on the file
+sudo mkswap /swapfile
+-> setting up swapspace version 1, size = 2 GiB (2147479552 bytes)
+   no label, UUID=fa6b16df-7d80-4a80-47976b1ec534
+sudo swapon /swapfile # enable
+# verify
+sudo swapon --show
+# also can verify using
+free -h
+# close instance and restart, this will be lost
+# if want to make it permanent:
+# add this into system file, so it can load when the sytem reboot or restart
+sudo nano /etc/fstab
+
+# in this opened file, type in:
+/swapfile non swap sw 0 0 #
+
+******************* access from local machine
+python app.py
+-> running on http://0.0.0.0:5000/ (press ctrl+c to quit)
+# copy public ip address of the EC2 and paste into your local machine's web browser (public ip will change if restart/ need to pay if want a fixed ip)
+-> working
+
+# reponse time 1.41s +/- 455ms
+# why slow:
+- free tier instance, limited memory: 1GB
+- we are using SSD, hard disk memory as RAM, much slower than RAM
+- lower cpu count and lower cpu clock speed
+# in production, purchase larger instance
+************************************************************************************************** Flask / Nginx / WSGI
+we have server working and accessible from local machine using HTTP request
+but one thing is missing !!!!
+remember "flask server":
+warming: this is a development server. Do not use it in a production deployment
+
+what if you receive millions of request per second, this flask server cannot handle
+
+need larger scalability and higher security server !!!!!!!
+
+flask will run at the backend while at frontend we will use nginx and wsgi
+
+
+
