@@ -107,5 +107,16 @@ if __name__ =='__main__':
   app.run(host='0.0.0.0')
   
   
-  
+******************************************* docker
+List the library names that you included in requirements.txt
+
+docker build and docker run should succesfully execute, the application open flawlessly from host machine's browser
+
+Please make a pull request from this repo and try making an update - https://github.com/vivekkalyanarangan30/Text-Clustering-API/blob/master/Dockerfile
+
+Were you able to write the Dockerfile with only one RUN command? If yes, share the command
+
+docker build and docker run should succesfully execute, the application open flawlessly from host machine's browser
+
+Please make a pull request from this repo and try making an update - https://github.com/vivekkalyanarangan30/Text-Clustering-API/blob/master/Dockerfile
   
