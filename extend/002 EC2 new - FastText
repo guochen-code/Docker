@@ -128,13 +128,39 @@ sudo apt update
 sudo apt install nginx
 # nginx registers itself as as service
 sudo ufw app list
-# we should only allow HTTPS for time being 
+# we should only allow HTTPS for time being we test with HTTP, because will need SSL certificate for HTTPS
 sudo ufw allow 'Nginx HTTP'
 sudo ufw status
 systemctl status nginx
 # check with public ip on web browser
 http://<public ip of EC2>
-# make connection between nginx and wsgi services
+# make connection between nginx and wsgi services, so that when we request nginx, it passes the request to wsgi
+***************************************************************************************
+# configure nginx
+sudo nano /etc/nginx/sites-available/mlmodel
+# in this file, write:
+server {
+        listen 80;
+        server_name mlmodel <public ip of EC2>;
+        
+        location / {
+                  include uwsgi_params;
+                  uwsgi_pass unix:/home/ubuntu/mlmodel/mlmodel.socket;
+                 }
+}        
+# save and exit
+sudo ln -s /etc/nginx/sites-avaiable/mlmodel /etc/nginx/sites-enabled # link sites-available mlmodel to sites-enabled. so nginx knows it has a config file stored here
+
+sudo nginx -t
+sudo sustemctl restart nginx
+sudo ufw delete allow 5000 
+sudo ufw allow 'Nginx Full' # now only allowed in through port 80
+# test, open web browser:
+http://<public ip of EC2>
+
+
+
+
 
 
 
