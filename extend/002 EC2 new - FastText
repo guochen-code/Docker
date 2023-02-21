@@ -1,0 +1,144 @@
+***************************************************************************************
+# ssh into EC2
+***************************************************************************************
+# change alias: python=python3, pip=pip3
+sudo nano ~/.bashrc
+# add to the file and save
+# need to restart it for it to take effect !!!!!!!!!!!!!
+alias python=python3
+alias pip=pip3
+***************************************************************************************
+# ssh into the machine again
+# command pip3 not found:
+sudo apt install python3-pip
+***************************************************************************************
+# create extra Ram from SSD
+sudo swapon --show
+df -h
+sudo fallocate -l 4G /swapfile
+ls -lh /swapfile
+sudo chmod 600 / swapfile
+ls -lh /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo swapon --show
+free -h
+# if you close the system and restart the system, the swap is gone
+# set permanently
+sudo cp /etc/fstab /etc/fstab.bak   # create a backup file
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab    # create a swap file for permanent
+***************************************************************************************
+# uninstall Anaconda if you have otherwise it will not work
+# need to keep system up-to-date
+sudo apt update # will get necessary python packages in root directory we need to upgrade this system
+sudo apt upgrade
+sudo apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
+pip3 install -U pip # upgrade pip
+pip3 install ktrain
+pip3 install flask
+***************************************************************************************
+# create venv
+sudo apt install python3-venv # install package
+
+mkdir ~/mlmodel
+cd ~/mlmodel
+python3.6 -m venv modelenv # create venv
+source modelenv/bin/activate # activate venv
+
+# install packages in venv
+pip install -U pip
+pip install wheel
+pip install uwsgi flask
+pip install ktrain
+
+sudo ufw allow 5000 # ask ubuntu machine to open port 5000
+***************************************************************************************
+local files to be uploaded to EC2. In my local machine, I have:
+FastText-APP
+  - toxic_fasttext
+  - fasttext_model.py : predictor = ktrain.load_predictor('toxic_fasttext')
+  - mlmodel.py : import fasttext_model as model ; @app.route('/get_prediction', methods=['POST']); ......
+  - wsgi.py : from mlmodel import app
+  
+#####side note:
+# json will throw an error when it comes to floating number (altenatively, use simplejson library)
+# ediction result: pred = c',0.8994166),(severe_toxic,0.15374182), ......]
+# rst to convert it to dictionary and then convert to strings
+json.dumps(pred) --> error
+# solutio
+d = dict(pred)
+for key in d:
+  d[key] = str(d[key])
+json.dumps(d)
+# you can test on local machine before deploy to cloud
+# prepare new data - have to be json
+data={'comment':'I like you.'} # this is not json
+data = json.dumps(data)
+***************************************************************************************
+# WinSCP : used to connect to EC2 to transfer your files from local machine
+# find mlmodel folder and upload the files
+***************************************************************************************
+# test uwsgi server
+uwsgi --socket 0.0.0.0:5000 --protocol = http -w wsgi:app # run the server
+# open in web browser:
+http://<public_ip of EC2>:5000
+# deactivate the even
+deactivate
+***************************************************************************************
+configure uwsgi - need to set up a robust system for deployment
+nano ~/mlmodel/mlmodel.ini
+# in the file:
+[uwsgi]
+module=wsgi:app
+
+master=false
+process=1
+# if you make master true and process more than 1, your tensorflow will hang here. tensorflow has limitation and bug inside tensorflow
+socket=mlmodel.sock
+chmod-socket=660 # give read and write permission
+vacuum=true
+die-on-term=true # when services restart, all services will be in sync
+# exit and save the file
+***************************************************************************************
+# create a systemd unit file. otherwise all our above configurations will be gone after restart the system
+sudo nano /etc/systemd/system/mlmodel.service
+# in this new file, write:
+[Unit]
+Description=uWSGI instance to serve mlmodel
+After=network.target
+
+[Serivce]
+User=ubuntu # change if your user name is different
+Group=www-data
+WorkingDirectory=/home/ubuntu/mlmodel
+Environment="PATH=/home/ubuntu/mlmodel/modelenv/bin"
+ExecStart=/home/ubuntu/mlmodel/modelenv/bin/uwsgi --ini mlmodel.ini
+
+[Install]
+WantedBy=multi-user.target
+# save and exit
+***************************************************************************************
+# start uwsgi services
+sudo systemctl start mlmodel
+sudo systemctl enable mlmodel
+sudo systemctl status mlmodel
+***************************************************************************************
+# install Nginx
+sudo apt update
+sudo apt install nginx
+# nginx registers itself as as service
+sudo ufw app list
+# we should only allow HTTPS for time being 
+sudo ufw allow 'Nginx HTTP'
+sudo ufw status
+systemctl status nginx
+# check with public ip on web browser
+http://<public ip of EC2>
+# make connection between nginx and wsgi services
+
+
+
+
+
+
+
