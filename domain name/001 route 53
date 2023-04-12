@@ -2,18 +2,24 @@ add custom domain with route 53
 * make sure server names are matched !!!! (between records list and these names in the Domains tab)
 
 go to hosted zones - create record (for customized name), such as:
-park.link
-*.park.link (== www.park.link)
+park.link (reord type: routes traffic to ipv4 and some aws resources)
+www.park.link (record type: CNAME - routs traffic to another domain name and to some aws resources)
 
 use alias and choose load balancer, if you want to use load balancer, otherwise, it will be the public ip address of the target ec2
 can also set TTL (time to live) and routing polices such as simple, weighted, geolocation, latency and failover etc....
 can forward requests to a load balancer instead of directly to target ec2s
+
+for elastic beanstalk - choose alias - choose elastic beanstalk
 
 ***********************************************************************************************************************************************************
 Amazon certificate Manager (ACM)   ------- use HTTPS
 (1) request a certificate
 (2) enter fully qualified domain name
       park.link
-      *.park.link 
+      *.park.link (== www.park.link)
 (3) create records in route 53 (a buttom you can click from inside domains)
 (4) go to load balancer - add HTTPS listener to target group - default SSL/TLS certificate from ACM
+(4.1) if use elastic beanstalk - go to EB - configuration - load balancer 
+- add listener (listener port: 443; listener protocol: HTTPS; instance port: HTTP; SSL certificate: choose what you created
+
+
