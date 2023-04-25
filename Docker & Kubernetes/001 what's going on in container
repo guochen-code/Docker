@@ -1,0 +1,28 @@
+docker container top <container name> -> process list in one container
+docker container inspect <container name> -> details of one container config
+docker container stats -> performance status for all containers
+
+***********************************************************************************************************************************************************************************
+
+docker container run -it -> start new container interactively
+docker container exec -it -> run additional command in existing container
+
+docker container run -it proxy nginx bash # bash shell if run with -it, it will give you a terminal inside the running container
+# you will get into a container
+ls -al
+-> return all the files inside the container, which is based on nginx image
+# from here, can change config files and download packages from internet
+exit # to get out # this will also stop the container
+
+docker container run -it --name ubuntu ubuntu # mini version of ubuntu because it is in a container but in a virtual machine, miss some softwares
+apt-get update
+apt-get install -y curl
+curl google
+exit
+
+docker container start -ai ubuntu # curl can still be used when restart the container
+
+# what if we want to see the shell inside a running contianer that's already running something like mySQL or nginx
+docker container exec -it <container name> bash
+ps aux
+(ps command is no longer included in the mysql image by default. you can install it once you are in the container with 'apt-get update&&apt-get install -y procps')
