@@ -3,9 +3,10 @@ docker container inspect <container name> -> details of one container config
 docker container stats -> performance status for all containers
 
 ***********************************************************************************************************************************************************************************
-
+################################################################################
 docker container run -it -> start new container interactively
 docker container exec -it -> run additional command in existing container
+################################################################################
 
 docker container run -it proxy nginx bash # bash shell if run with -it, it will give you a terminal inside the running container
 # you will get into a container
@@ -26,3 +27,20 @@ docker container start -ai ubuntu # curl can still be used when restart the cont
 docker container exec -it <container name> bash
 ps aux
 (ps command is no longer included in the mysql image by default. you can install it once you are in the container with 'apt-get update&&apt-get install -y procps')
+exit
+# this time after get out, the container is still running
+# because docker container exec runs an additional process on an existing running container, it's not going to affect the root process for the cotainer daemon
+
+***********************************************************************************************************************************************************************************
+# Alpine Linux, another distribution of linux, only 5MB in size
+docker pull alpine # pull the latest image
+docker image ls # see the size
+docker container run -it alpine bash
+-> error: executable file not found in $PATH # means bash not installed in the container
+################################## we can only run things in the container that already exists in its image when you started it
+docker container run -it sh # it does have sh, less powerful than bash
+# has package manager called apk, we can use that to install bash
+
+
+
+
