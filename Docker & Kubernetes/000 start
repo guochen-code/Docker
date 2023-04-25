@@ -1,0 +1,55 @@
+docker version -> verified cli can talk to engine
+docker info -> most config values of engine
+docker -> command line structure
+
+image vs container
+- an image is the application we want to run
+- a container is an instance of that image running as a process
+- you can have many containers running off the same image
+
+**********************************************************************************************
+docker container run --publish 80:80 nginx
+1. downloaded image 'nginx' from docker hub
+2. started a new container from that image
+3. opened port 80 on the host IP
+4. routes that traffic to the container IP, port 80
+
+docker container run --publish 80:80 --detach nginx
+-> return an unique container Id; detach means running in background
+
+docker container ls # by default only showing running containers
+
+docker container stop <container Id> # only type for first few digits in order to be unique
+
+docker container ls -a
+-> # run vs start: run always starts a new container while start starts an existing stopped one
+
+docker container run --publish 80:80 --detach --name webhost nignx # give a name
+
+# because use detach, cannot see any print outs anymore
+# to see the logs:
+docker container logs webhost
+
+docker container --help # list all the commands
+
+docker container rm 63f 690 ode # multiple input container Id
+# cannot remove running container, to force the delete
+docker container rm -f <container Id>
+**********************************************************************************************
+what happens in 'docker container run'
+1. look for that image locally in image cache, does not find anything
+2. then looks in remote image repository (defaults to Docker Hub)
+3. downloads the latest version (nginx: latest by default)
+4. creates new container based on that image and prepares to start
+5. gives it a virtual IP on a private network inside docker engine
+6. opens up port 80 on host and forwards to port 80 in container
+7. starts container by using the CMD in the image Dockerfile
+
+docker container run --publish 8080:80 --name webhost -d nginx:1.11 nginx -T
+docker container run -d -p 3306:3306 --name db -e MYSQL_RANDOM_ROOT_PASSWORD=yes mysql
+docker container logs db -> find out the password
+**********************************************************************************************
+curl localhost -> nignx
+curl localhost:8080 -> apache server
+stop and remove by name
+
