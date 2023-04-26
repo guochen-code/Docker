@@ -22,3 +22,16 @@ docker volume inspect <volume Id>
 # difficult to tell which volume is which from volume Id and even inspect does not provide much information # but we can give a name
 docker container run -d --name mysql -e MYSQL_ALLOW_PASSWORD=True -v <given_name_to_volume>:/var/lib/mysql mysql
 
+*********************************************************************************************************************************************
+bind mounting
+- maps a host file or directory to a container file or directory
+- just two locations pointing to the same file(s)
+- skips UFS, and host files overwrite any in container
+- cannot use in Dockerfile, must be at container run
+- ... run -v /Users/bret/stuff:/path/container (mac/linux)
+- ... run -v //c/Users/bret/stuff:/path/container (windows)
+
+
+For PowerShell use: ${pwd} 
+For cmd.exe "Command Prompt use: %cd%
+Linux/macOS bash, sh, zsh, and Windows Docker Toolbox Quickstart Terminal use: $(pwd) 
