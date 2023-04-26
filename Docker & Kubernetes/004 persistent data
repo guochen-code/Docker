@@ -8,4 +8,17 @@ two solutions: volumes and bind mounts
 volumes: make special location outside of container UFS
 bind mounts: link container path to host path
 
+*********************************************************************************************************************************************
+docker image pull mysql
+docker inspect mysql # find :Volumes: /var/lib/mysql # will outlive container even it is removed for data persistency
+docker container run -d --name mysql -e MYSQL_ALLOW_PASSWORD=True mysql # need this environment variable to work
+# can also see Mounts:[......]
+# the running container getting its own unique location on the host, to store the data, in the background, mounted to that location in the container, so the location in the container
+just thinks it's writing to /var/lib/mysql, the data actually living in that location on the host
+
+docker volume ls
+docker volume inspect <volume Id>
+
+# difficult to tell which volume is which from volume Id and even inspect does not provide much information # but we can give a name
+docker container run -d --name mysql -e MYSQL_ALLOW_PASSWORD=True -v <given_name_to_volume>:/var/lib/mysql mysql
 
