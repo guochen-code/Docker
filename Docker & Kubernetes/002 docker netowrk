@@ -18,7 +18,7 @@ docker network disconnect
 docker container run -d --name new_nginx --network my_app_net nginx
 docker network inspect my_app_net
 
-docker metwork --help
+docker network --help
 
 docker network connect <network Id> <container Id>
 docker container inspect <docker Id>
@@ -30,5 +30,20 @@ docker network disconnect <network Id> <container Id>
 docker container exec -it nginx_1 ping nginx_2 
 
 the default bridge network driver allow containers to communicate with each other when running on the same docker host
+
+
+***************************************************************************************************************************************************
+summary:
+(1) create two linux containers and install/update curl 
+centos:7 ubuntu:14.04
+
+docker container run --rm -it centos:7 bash # --rm: automatically clean up when exit
+docker container run --rm -it ubuntu:10.04 bash
+
+(2) DNS round robin test
+docker container run -d --net dude --network-alias search elasticsearch:2
+docker container run -d --net dude --network-alias search elasticsearch:2 # because not specify a name here, get two different containers
+docker container run --rm --network dude alpine nslookup search
+docker container run --rm ---net dude centos curl -s search:9092
 
 
