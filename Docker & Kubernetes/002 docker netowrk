@@ -1,0 +1,17 @@
+# exposing of ports on your host (your mac machine) to the physical network using the -p
+docker container run -p
+
+# quick port check with 
+docker container port <container>
+
+# show network
+docker network ls
+# inspect a network
+docker network inspect
+# create a network
+docker network create --driver
+# attach a network to container 
+docker network connect
+# detach a network from container
+docker network disconnect
+
