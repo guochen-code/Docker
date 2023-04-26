@@ -15,3 +15,20 @@ docker network connect
 # detach a network from container
 docker network disconnect
 
+docker container run -d --name new_nginx --network my_app_net nginx
+docker network inspect my_app_net
+
+docker metwork --help
+
+docker network connect <network Id> <container Id>
+docker container inspect <docker Id>
+docker network disconnect <network Id> <container Id>
+
+***************************************************************************************************************************************************
+# nginx_1 and 2 in the same network
+# can talk to each other using their names
+docker container exec -it nginx_1 ping nginx_2 
+
+the default bridge network driver allow containers to communicate with each other when running on the same docker host
+
+
