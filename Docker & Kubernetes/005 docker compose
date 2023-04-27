@@ -1,0 +1,34 @@
+template.yml
+
+version: '2'
+
+services:
+  jekyll:
+    image: bretfisher/jekyll-serve
+    volume:
+      - .:/site # . == $(pwd)
+    port:
+      - '800:4000'   
+********************************************************************************************************************************************************      
+version: '2'
+
+services:
+  wordpress:
+    image: wordpress
+    volume:
+      - ./wordpress-data:/var/www/html
+    port:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_PASSWORD: example
+      
+  mysql:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volume:
+      - ./mysql-data:var/lib/mysql
+********************************************************************************************************************************************************      
+docker compose up # setup volumes/networks and start all containers
+docker compose down # stop all containers and remove cont/vol/net
+
