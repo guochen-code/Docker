@@ -38,3 +38,18 @@ bind mounting
 For PowerShell use: ${pwd} 
 For cmd.exe "Command Prompt use: %cd%
 Linux/macOS bash, sh, zsh, and Windows Docker Toolbox Quickstart Terminal use: $(pwd) 
+
+*********************************************************************************************************************************************
+summary:
+assignment - volume
+dcoker container run -d --name psql -v psql:/var/lib/postgresql/data postgres:9.6.1 # find this info from docker hub: /var/lib/postgresql/data
+docker container logs -f psql
+docker container stop <container Id>
+docker container run -d --name psql2 -v psql:/var/lib/postgresql/data postgres:9.6.2 # psql is volume name
+
+assignment - bind mounts
+# allow to edit file in your host operating system, actually being used or running inside the contianer, do things in a much easier way
+# go to bindmount-sample-1 file
+docker container run -p 80:4000 -v $(pwd):/site bretfisher/jekyll-serve
+
+
