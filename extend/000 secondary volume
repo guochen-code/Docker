@@ -1,0 +1,25 @@
+# Use the lsblk -f command to get information about all of the devices attached to the instance.
+
+sudo lsblk -f
+
+# The FSTYPE column shows the file system type for each device. If the column is empty for a specific device, it means that the device does not have a file system.
+# If you have an empty volume, use the mkfs -t command to create a file system on the volume.
+
+sudo mkfs -t xfs /dev/sdf
+
+# If you get an error that mkfs.xfs is not found, use the following command to install the XFS tools and then repeat the previous command:
+
+sudo yum install xfsprogs
+
+# Use the mkdir command to create a mount point directory for the volume. The mount point is where the volume is located in the file system tree and 
+# where you read and write files to after you mount the volume. The following example creates a directory named /data.
+
+sudo mkdir /data
+
+# Use the following command to mount the volume at the directory you created in the previous step.
+sudo mount /dev/sdf /data
+
+*******************************************************************************************************************************************************
+# The mount point is not automatically preserved after rebooting your instance. To automatically mount this EBS volume after reboot
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html#ebs-mount-after-reboot
+
