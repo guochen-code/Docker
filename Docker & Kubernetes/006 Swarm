@@ -1,0 +1,10 @@
+docker swarm init # this is how a single node initalizes a swarm, and is automatically joined as a manager
+
+To scale up a service to multiple containers, which of the following commands would you use?
+docker servie update <service name> --replicas #
+
+We can update a role of another node from a manager node using the "docker node update --role" command.
+
+
+
+
