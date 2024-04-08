@@ -1,0 +1,24 @@
+[2:27 PM] Chen Guo
+docker-compose ps
+
+[2:27 PM] Chen Guo
+docker exec -it cli-tools kafka-topics --list --bootstrap-server broker0:29092,broker1:29093,broker2:29094
+
+[2:32 PM] Chen Guo
+docker exec -it cli-tools kafka-topics --bootstrap-server broker0:29092 --create --topic sample --partitions 2 --replication-factor 2
+
+[2:32 PM] Chen Guo
+docker exec -it cli-tools kafka-topics --bootstrap-server broker0:29092 --describe --topic sample
+
+[2:34 PM] Chen Guo
+docker exec -it cli-tools kafka-console-consumer --bootstrap-server broker0:29092 --topic sample --from-beginning
+
+[2:35 PM] Chen Guo
+docker exec -it cli-tools kafka-console-producer --bootstrap-server broker0:29092 --topic sample
+
+[4:24 PM] Chen Guo
+docker-compose up -d
+
+[4:24 PM] Chen Guo
+docker-compose down -v
+
