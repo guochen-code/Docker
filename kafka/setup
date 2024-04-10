@@ -22,3 +22,11 @@ docker-compose up -d
 [4:24 PM] Chen Guo
 docker-compose down -v
 
+***** update consumer group offsets *****
+docker exec -it cli-tools kafka-consumer-groups --bootstrap-server broker0:29092 --decribe --group people.adv.java.grp-0
+ 
+docker exec -it cli-tools kafka-consumer-groups --bootstrap-server broker0:9092 --reset-offsets 5 --group people.adv.java.grp-0 --topic people.adv.java:0 --dry-run
+ 
+docker exec -it cli-tools kafka-consumer-groups --bootstrap-server broker0:9092 --reset-offsets 5 --group people.adv.java.grp-0 --topic people.adv.java:0 --execute
+ 
+docker exec -it cli-tools kafka-consumer-groups --bootstrap-server broker0:9092 --reset-offsets --to-earliest --group people.adv.java.grp-0 --topic people.adv.java:0 --execute
